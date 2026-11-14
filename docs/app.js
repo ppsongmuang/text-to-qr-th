@@ -1,12 +1,8 @@
-const defaults = {
-  text: "สวัสดี! สแกน QR นี้ได้เลย",
-  size: 480,
-  level: "M",
-  foreground: "#173f36",
-  background: "#fffdf7",
-};
+const translations = window.QR_TRANSLATIONS;
+const defaults = { size: 480, level: "M", foreground: "#173f36", background: "#fffdf7" };
 
 const elements = {
+  language: document.querySelector("#language-select"),
   text: document.querySelector("#qr-text"),
   size: document.querySelector("#qr-size"),
   level: document.querySelector("#qr-level"),
@@ -22,12 +18,12 @@ const elements = {
   reset: document.querySelector("#reset-button"),
 };
 
+let currentLocale = "th";
 let qr;
 let renderTimer;
 
-function setStatus(message) {
-  elements.status.textContent = message;
-}
+const strings = () => translations[currentLocale];
+const setStatus = (message) => { elements.status.textContent = message; };
 
 function updateColorLabels() {
   elements.foregroundValue.value = elements.foreground.value.toUpperCase();
@@ -42,16 +38,15 @@ function showEmptyState(isEmpty) {
   elements.canvas.hidden = isEmpty;
   elements.empty.hidden = !isEmpty;
   elements.download.disabled = isEmpty;
-  setStatus(isEmpty ? "รอข้อความของคุณ" : "QR Code อัปเดตแล้ว");
+  setStatus(isEmpty ? strings().waiting : strings().updated);
 }
 
 function createQr() {
   if (typeof QRious === "undefined") {
-    setStatus("ไม่สามารถโหลดตัวสร้าง QR ได้ กรุณารีเฟรชหน้า");
+    setStatus(strings().loadError);
     elements.download.disabled = true;
     return;
   }
-
   qr = new QRious({
     element: elements.canvas,
     value: elements.text.value,
@@ -67,52 +62,78 @@ function renderQr() {
   window.clearTimeout(renderTimer);
   updateCount();
   updateColorLabels();
-
-  const value = elements.text.value.trim();
-  if (!value) {
+  if (!elements.text.value.trim()) {
     showEmptyState(true);
     return;
   }
-
   showEmptyState(false);
   renderTimer = window.setTimeout(() => {
     try {
-      if (!qr) {
-        createQr();
-      } else {
-        qr.set({
-          value: elements.text.value,
-          size: Number(elements.size.value),
-          level: elements.level.value,
-          foreground: elements.foreground.value,
-          background: elements.background.value,
-          padding: 28,
-        });
-      }
-      setStatus("QR Code อัปเดตแล้ว");
+      if (!qr) createQr();
+      else qr.set({
+        value: elements.text.value,
+        size: Number(elements.size.value),
+        level: elements.level.value,
+        foreground: elements.foreground.value,
+        background: elements.background.value,
+        padding: 28,
+      });
+      setStatus(strings().updated);
     } catch (error) {
-      setStatus("ข้อความยาวเกินไปสำหรับการตั้งค่านี้");
+      setStatus(strings().tooLong);
       elements.download.disabled = true;
       console.error(error);
     }
   }, 100);
 }
 
+function applyLanguage(locale, shouldRender = true) {
+  const nextLocale = translations[locale] ? locale : "en";
+  const isExample = Object.values(translations).some(({ defaultText }) => defaultText === elements.text.value);
+  currentLocale = nextLocale;
+  const text = strings();
+
+  document.documentElement.lang = nextLocale;
+  document.documentElement.dir = nextLocale === "ar" ? "rtl" : "ltr";
+  document.title = text.pageTitle;
+  document.querySelector('meta[name="description"]').content = text.metaDescription;
+  document.querySelectorAll("[data-i18n]").forEach((node) => {
+    if (text[node.dataset.i18n]) node.textContent = text[node.dataset.i18n];
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
+    if (text[node.dataset.i18nPlaceholder]) node.placeholder = text[node.dataset.i18nPlaceholder];
+  });
+  document.querySelectorAll("[data-i18n-aria-label]").forEach((node) => {
+    if (text[node.dataset.i18nAriaLabel]) node.setAttribute("aria-label", text[node.dataset.i18nAriaLabel]);
+  });
+
+  elements.language.value = nextLocale;
+  if (isExample) elements.text.value = text.defaultText;
+  try { localStorage.setItem("qr-language", nextLocale); } catch (_) {}
+  if (shouldRender) renderQr();
+}
+
+function resolveInitialLanguage() {
+  try {
+    const saved = localStorage.getItem("qr-language");
+    if (saved && translations[saved]) return saved;
+  } catch (_) {}
+  const baseLocale = (navigator.language || "th").toLowerCase().split("-")[0];
+  return translations[baseLocale] ? baseLocale : "th";
+}
+
 function downloadQr() {
   if (!qr || elements.download.disabled) return;
-
   const link = document.createElement("a");
-  const timestamp = new Date().toISOString().slice(0, 10);
-  link.download = `qr-code-${timestamp}.png`;
+  link.download = `qr-code-${new Date().toISOString().slice(0, 10)}.png`;
   link.href = elements.canvas.toDataURL("image/png");
   link.click();
-
-  setStatus("ดาวน์โหลดไฟล์แล้ว");
-  window.setTimeout(() => setStatus("QR Code อัปเดตแล้ว"), 1800);
+  setStatus(strings().downloaded);
+  window.setTimeout(() => setStatus(strings().updated), 1800);
 }
 
 function resetAll() {
-  elements.text.value = defaults.text;
+  elements.text.value = strings().defaultText;
   elements.size.value = String(defaults.size);
   elements.level.value = defaults.level;
   elements.foreground.value = defaults.foreground;
@@ -123,8 +144,9 @@ function resetAll() {
 
 [elements.text, elements.size, elements.level, elements.foreground, elements.background]
   .forEach((element) => element.addEventListener("input", renderQr));
-
+elements.language.addEventListener("change", (event) => applyLanguage(event.target.value));
 elements.download.addEventListener("click", downloadQr);
 elements.reset.addEventListener("click", resetAll);
 
+applyLanguage(resolveInitialLanguage(), false);
 window.addEventListener("load", renderQr);
