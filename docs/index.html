@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="./styles.css" />
     <script defer src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
     <script defer src="./i18n.js"></script>
+    <script defer src="./tools-i18n.js"></script>
     <script defer src="./app.js"></script>
   </head>
   <body>
@@ -75,17 +76,84 @@
             </div>
           </div>
 
-          <label class="field-label" for="qr-text" data-i18n="textLabel">ข้อความของคุณ</label>
-          <div class="textarea-wrap">
-            <textarea
-              id="qr-text"
-              maxlength="900"
-              rows="6"
-              spellcheck="false"
-              placeholder="เช่น https://example.com หรือข้อความที่ต้องการแชร์"
-              data-i18n-placeholder="placeholder"
-            >สวัสดี! สแกน QR นี้ได้เลย</textarea>
-            <span id="char-count" aria-live="polite">25 / 900</span>
+          <div class="tool-selector" role="tablist" aria-label="ประเภท QR Code" data-i18n-aria-label="toolTypeLabel">
+            <button class="tool-button is-active" type="button" role="tab" aria-selected="true" data-tool="text"><span class="tool-icon">T</span><span data-i18n="toolText">ข้อความ</span></button>
+            <button class="tool-button" type="button" role="tab" aria-selected="false" data-tool="url"><span class="tool-icon">↗</span><span data-i18n="toolUrl">URL</span></button>
+            <button class="tool-button" type="button" role="tab" aria-selected="false" data-tool="wifi"><span class="tool-icon">Wi</span><span data-i18n="toolWifi">Wi‑Fi</span></button>
+            <button class="tool-button" type="button" role="tab" aria-selected="false" data-tool="vcard"><span class="tool-icon">ID</span><span data-i18n="toolVcard">นามบัตร</span></button>
+            <button class="tool-button" type="button" role="tab" aria-selected="false" data-tool="email"><span class="tool-icon">@</span><span data-i18n="toolEmail">อีเมล</span></button>
+            <button class="tool-button" type="button" role="tab" aria-selected="false" data-tool="phone"><span class="tool-icon">☎</span><span data-i18n="toolPhone">โทรศัพท์</span></button>
+            <button class="tool-button" type="button" role="tab" aria-selected="false" data-tool="sms"><span class="tool-icon">S</span><span data-i18n="toolSms">SMS</span></button>
+            <button class="tool-button" type="button" role="tab" aria-selected="false" data-tool="whatsapp"><span class="tool-icon">WA</span><span data-i18n="toolWhatsapp">WhatsApp</span></button>
+            <button class="tool-button" type="button" role="tab" aria-selected="false" data-tool="location"><span class="tool-icon">⌖</span><span data-i18n="toolLocation">แผนที่</span></button>
+          </div>
+
+          <div class="tool-forms">
+            <section class="tool-panel is-active" data-panel="text" role="tabpanel">
+              <label class="field-label" for="qr-text" data-i18n="textLabel">ข้อความของคุณ</label>
+              <textarea id="qr-text" class="tool-field" maxlength="900" rows="5" spellcheck="false" placeholder="เช่น https://example.com หรือข้อความที่ต้องการแชร์" data-i18n-placeholder="placeholder">สวัสดี! สแกน QR นี้ได้เลย</textarea>
+            </section>
+
+            <section class="tool-panel" data-panel="url" role="tabpanel" hidden>
+              <label class="field-label" for="qr-url" data-i18n="urlLabel">URL เว็บไซต์</label>
+              <input id="qr-url" class="tool-field force-ltr" type="url" inputmode="url" placeholder="https://example.com" />
+            </section>
+
+            <section class="tool-panel" data-panel="wifi" role="tabpanel" hidden>
+              <div class="form-grid">
+                <label><span data-i18n="networkName">ชื่อเครือข่าย</span><input id="wifi-ssid" class="tool-field" type="text" autocomplete="off" placeholder="My Wi-Fi" /></label>
+                <label><span data-i18n="password">รหัสผ่าน</span><input id="wifi-password" class="tool-field force-ltr" type="text" autocomplete="off" placeholder="••••••••" /></label>
+                <label><span data-i18n="securityType">ความปลอดภัย</span><select id="wifi-security" class="tool-field"><option value="WPA" data-i18n="securityWpa">WPA/WPA2</option><option value="WEP" data-i18n="securityWep">WEP</option><option value="nopass" data-i18n="securityOpen">ไม่มีรหัสผ่าน</option></select></label>
+                <label class="check-control"><input id="wifi-hidden" type="checkbox" /><span data-i18n="hiddenNetwork">เครือข่ายซ่อนอยู่</span></label>
+              </div>
+            </section>
+
+            <section class="tool-panel" data-panel="vcard" role="tabpanel" hidden>
+              <div class="form-grid">
+                <label><span data-i18n="fullName">ชื่อ-นามสกุล</span><input id="vcard-name" class="tool-field" type="text" autocomplete="name" /></label>
+                <label><span data-i18n="organization">องค์กร</span><input id="vcard-org" class="tool-field" type="text" autocomplete="organization" /></label>
+                <label><span data-i18n="phoneNumber">เบอร์โทรศัพท์</span><input id="vcard-phone" class="tool-field force-ltr" type="tel" autocomplete="tel" placeholder="+66..." /></label>
+                <label><span data-i18n="emailAddress">อีเมล</span><input id="vcard-email" class="tool-field force-ltr" type="email" autocomplete="email" placeholder="name@example.com" /></label>
+                <label class="form-span"><span data-i18n="website">เว็บไซต์</span><input id="vcard-url" class="tool-field force-ltr" type="url" placeholder="https://example.com" /></label>
+              </div>
+            </section>
+
+            <section class="tool-panel" data-panel="email" role="tabpanel" hidden>
+              <div class="form-grid">
+                <label><span data-i18n="emailAddress">อีเมล</span><input id="email-address" class="tool-field force-ltr" type="email" placeholder="name@example.com" /></label>
+                <label><span data-i18n="subject">หัวข้อ</span><input id="email-subject" class="tool-field" type="text" /></label>
+                <label class="form-span"><span data-i18n="message">ข้อความ</span><textarea id="email-body" class="tool-field" rows="3"></textarea></label>
+              </div>
+            </section>
+
+            <section class="tool-panel" data-panel="phone" role="tabpanel" hidden>
+              <label class="field-label" for="phone-number" data-i18n="phoneNumber">เบอร์โทรศัพท์</label>
+              <input id="phone-number" class="tool-field force-ltr" type="tel" inputmode="tel" placeholder="+66..." />
+            </section>
+
+            <section class="tool-panel" data-panel="sms" role="tabpanel" hidden>
+              <div class="form-grid">
+                <label><span data-i18n="phoneNumber">เบอร์โทรศัพท์</span><input id="sms-number" class="tool-field force-ltr" type="tel" placeholder="+66..." /></label>
+                <label class="form-span"><span data-i18n="message">ข้อความ</span><textarea id="sms-message" class="tool-field" rows="3"></textarea></label>
+              </div>
+            </section>
+
+            <section class="tool-panel" data-panel="whatsapp" role="tabpanel" hidden>
+              <div class="form-grid">
+                <label><span data-i18n="whatsappNumber">หมายเลข WhatsApp พร้อมรหัสประเทศ</span><input id="whatsapp-number" class="tool-field force-ltr" type="tel" placeholder="66812345678" /></label>
+                <label class="form-span"><span data-i18n="message">ข้อความ</span><textarea id="whatsapp-message" class="tool-field" rows="3"></textarea></label>
+              </div>
+            </section>
+
+            <section class="tool-panel" data-panel="location" role="tabpanel" hidden>
+              <div class="form-grid">
+                <label><span data-i18n="latitude">ละติจูด</span><input id="location-lat" class="tool-field force-ltr" type="number" inputmode="decimal" step="any" placeholder="13.7563" /></label>
+                <label><span data-i18n="longitude">ลองจิจูด</span><input id="location-lng" class="tool-field force-ltr" type="number" inputmode="decimal" step="any" placeholder="100.5018" /></label>
+                <label class="form-span"><span data-i18n="locationName">ชื่อสถานที่</span><input id="location-label" class="tool-field" type="text" /></label>
+              </div>
+            </section>
+
+            <div class="form-meta"><span id="payload-label" data-i18n="payloadLength">ความยาวข้อมูล</span><span id="char-count" aria-live="polite">25 / 900</span></div>
           </div>
 
           <div class="settings-grid">

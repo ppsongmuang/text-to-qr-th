@@ -275,7 +275,57 @@ h1 em::after {
   color: rgba(255, 253, 247, 0.6);
 }
 
+.tool-selector {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.tool-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line);
+  text-align: start;
+  font-size: 0.75rem;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.tool-button:hover,
+.tool-button.is-active {
+  color: var(--ink);
+  background: rgba(217, 242, 60, 0.2);
+  border-color: var(--ink);
+}
+
+.tool-icon {
+  display: grid;
+  flex: 0 0 25px;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  color: var(--ink);
+  background: var(--acid);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.63rem;
+  font-weight: 600;
+}
+
+.tool-forms {
+  min-height: 178px;
+}
+
+.tool-panel:not(.is-active) {
+  display: none;
+}
+
 .field-label,
+.form-grid label > span:first-child,
 .control > span,
 .color-control > span:first-child {
   display: block;
@@ -285,16 +335,21 @@ h1 em::after {
   letter-spacing: 0.03em;
 }
 
-.textarea-wrap {
-  position: relative;
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
 }
 
-textarea {
+.form-span {
+  grid-column: 1 / -1;
+}
+
+.tool-field {
   display: block;
   width: 100%;
-  min-height: 166px;
-  padding: 18px 18px 42px;
-  resize: vertical;
+  min-height: 48px;
+  padding: 12px 14px;
   color: var(--ink);
   background: #f8f5ec;
   border: 1px solid transparent;
@@ -306,18 +361,54 @@ textarea {
   transition: border-color 160ms ease, background 160ms ease;
 }
 
-textarea:focus {
+.tool-field:focus {
   background: #fffefb;
   border-color: var(--ink);
+  outline: none;
+}
+
+.tool-panel textarea.tool-field {
+  min-height: 128px;
+  resize: vertical;
+}
+
+.form-grid textarea.tool-field {
+  min-height: 88px;
+}
+
+.force-ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+.check-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding-top: 21px;
+  font-size: 0.78rem;
+}
+
+.check-control input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--ink);
+}
+
+.form-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 10px;
+  color: var(--ink-soft);
+  font-size: 0.67rem;
 }
 
 #char-count {
-  position: absolute;
-  right: 14px;
-  bottom: 12px;
-  color: var(--ink-soft);
   font-family: "Space Grotesk", sans-serif;
-  font-size: 0.67rem;
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
 .settings-grid {
@@ -341,6 +432,11 @@ select {
   border-bottom: 1px solid var(--line);
   border-radius: 0;
   outline: none;
+}
+
+select.tool-field {
+  padding: 10px 34px 10px 14px;
+  background-color: #f8f5ec;
 }
 
 select:focus {
@@ -515,6 +611,10 @@ footer {
   .intro { margin-bottom: 36px; }
   h1 { font-size: clamp(3rem, 17vw, 5.2rem); }
   .lede { font-size: 0.95rem; }
+  .tool-selector { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-span { grid-column: auto; }
+  .check-control { padding-top: 0; }
   .settings-grid { grid-template-columns: 1fr; }
   .editor-panel,
   .preview-panel { padding: 28px 22px; }
