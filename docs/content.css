@@ -37,6 +37,11 @@ a { color: inherit; text-underline-offset: 4px; }
 h1 { max-width: 900px; margin: 0; font-family: var(--display); font-size: clamp(2.7rem, 5.5vw, 4.8rem); font-weight: 500; letter-spacing: -0.055em; line-height: 1.02; }
 h1 em { color: var(--ink); font-family: var(--body); font-weight: 500; }
 .article-lede { margin: 34px 0 0; color: var(--ink-soft); font-size: clamp(1rem, 2vw, 1.2rem); line-height: 1.9; }
+.article-visual,
+.hub-visual { margin: 38px 0 0; overflow: hidden; border: 1px solid var(--line); background: var(--paper-soft); }
+.article-visual img,
+.hub-visual img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.article-visual figcaption { padding: 9px 12px; color: var(--ink-soft); border-top: 1px solid var(--line); font-size: 0.68rem; }
 .article-wrap article > section { padding: 44px 0; border-top: 1px solid var(--line); }
 .article-wrap article > section h2,
 .legal-copy h2 { margin: 0 0 18px; font-family: var(--display); font-size: clamp(1.45rem, 3vw, 2rem); line-height: 1.2; }
@@ -70,6 +75,7 @@ h1 em { color: var(--ink); font-family: var(--body); font-weight: 500; }
 .hub-wrap { padding: 74px 0 110px; }
 .hub-intro { max-width: 850px; margin-bottom: 64px; }
 .hub-intro > p:not(.content-eyebrow) { max-width: 720px; margin: 30px 0 0; color: var(--ink-soft); font-size: 1.05rem; }
+.hub-visual { width: min(100%, 940px); }
 .guide-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
 .guide-grid article { display: flex; flex-direction: column; min-height: 330px; padding: 25px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .guide-grid article > span { color: var(--ink-soft); font: 600 0.68rem var(--display); }
@@ -103,6 +109,8 @@ h1 em { color: var(--ink); font-family: var(--body); font-weight: 500; }
   .article-wrap, .hub-wrap, .legal-wrap { padding-top: 52px; }
   h1 { font-size: clamp(2.8rem, 15vw, 4.6rem); }
   .translate-card { align-items: stretch; flex-direction: column; }
+  .article-visual img,
+  .hub-visual img { aspect-ratio: 4 / 3; }
   .translate-card select { width: 100%; }
   .guide-grid { grid-template-columns: 1fr; }
   .guide-grid article { min-height: 260px; }

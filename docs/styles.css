@@ -624,6 +624,29 @@ input[type="color"]::-webkit-color-swatch { border: 1px solid var(--line); }
   line-height: 1.8;
 }
 
+.knowledge-visual {
+  position: relative;
+  margin: 0 0 26px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--paper-soft);
+}
+
+.knowledge-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 10px solid rgba(255, 253, 247, 0.35);
+  pointer-events: none;
+}
+
+.knowledge-visual img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+}
+
 .knowledge-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -698,6 +721,7 @@ footer nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
   .preview-panel { min-height: auto; }
   .qr-stage { width: 100%; margin-block: 8px 24px; }
   .knowledge { padding-top: 76px; }
+  .knowledge-visual img { aspect-ratio: 4 / 3; }
   .knowledge-grid { grid-template-columns: 1fr; }
   .knowledge-grid a { min-height: 190px; }
   footer p { display: none; }
