@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#173f36" />
+    <meta
+      name="description"
+      content="สร้าง QR Code จากข้อความได้ทันที ปรับแต่งสี ขนาด และดาวน์โหลดเป็น PNG"
+    />
+    <title>ข้อความ → QR Code</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="หน้าแรก QR Studio">
+        <span class="brand-mark" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i>
+        </span>
+        <span>QR / TEXT</span>
+      </a>
+      <p>สร้างในเครื่องของคุณ · ไม่มีการบันทึกข้อมูล</p>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">FREE QR GENERATOR</p>
+        <h1 id="page-title">เปลี่ยนทุกข้อความ<br />ให้พร้อม <em>สแกน</em></h1>
+        <p class="lede">
+          วางข้อความ ลิงก์ หรือข้อมูลที่ต้องการ แล้วรับ QR Code ที่พร้อมใช้งานทันที
+        </p>
+      </section>
+
+      <section class="generator" aria-label="เครื่องมือสร้าง QR Code">
+        <div class="editor-panel">
+          <div class="step-heading">
+            <span>01</span>
+            <div>
+              <h2>ใส่ข้อความ</h2>
+              <p>รองรับข้อความภาษาไทยและลิงก์</p>
+            </div>
+          </div>
+
+          <label class="field-label" for="qr-text">ข้อความของคุณ</label>
+          <div class="textarea-wrap">
+            <textarea
+              id="qr-text"
+              maxlength="900"
+              rows="6"
+              spellcheck="false"
+              placeholder="เช่น https://example.com หรือข้อความที่ต้องการแชร์"
+            >สวัสดี! สแกน QR นี้ได้เลย</textarea>
+            <span id="char-count" aria-live="polite">28 / 900</span>
+          </div>
+
+          <div class="settings-grid">
+            <label class="control">
+              <span>ขนาด</span>
+              <select id="qr-size">
+                <option value="640">ใหญ่ · 640 px</option>
+                <option value="480" selected>กลาง · 480 px</option>
+                <option value="320">เล็ก · 320 px</option>
+              </select>
+            </label>
+
+            <label class="control">
+              <span>ความทนต่อความเสียหาย</span>
+              <select id="qr-level">
+                <option value="L">ต่ำ · 7%</option>
+                <option value="M" selected>กลาง · 15%</option>
+                <option value="Q">สูง · 25%</option>
+                <option value="H">สูงสุด · 30%</option>
+              </select>
+            </label>
+
+            <label class="color-control">
+              <span>สี QR</span>
+              <span class="color-input-wrap">
+                <input id="qr-foreground" type="color" value="#173f36" />
+                <output id="foreground-value">#173F36</output>
+              </span>
+            </label>
+
+            <label class="color-control">
+              <span>สีพื้นหลัง</span>
+              <span class="color-input-wrap">
+                <input id="qr-background" type="color" value="#fffdf7" />
+                <output id="background-value">#FFFDF7</output>
+              </span>
+            </label>
+          </div>
+
+          <button class="secondary-button" id="reset-button" type="button">
+            คืนค่าเริ่มต้น
+          </button>
+        </div>
+
+        <div class="preview-panel">
+          <div class="step-heading light">
+            <span>02</span>
+            <div>
+              <h2>พร้อมสแกน</h2>
+              <p id="status-text" role="status">QR Code อัปเดตแล้ว</p>
+            </div>
+          </div>
+
+          <div class="qr-stage">
+            <div class="corner corner-top-left"></div>
+            <div class="corner corner-top-right"></div>
+            <div class="corner corner-bottom-left"></div>
+            <div class="corner corner-bottom-right"></div>
+            <canvas id="qr-canvas" width="480" height="480" aria-label="QR Code ที่สร้างจากข้อความ"></canvas>
+            <div class="empty-state" id="empty-state" hidden>
+              <span>+</span>
+              <p>พิมพ์ข้อความเพื่อสร้าง QR</p>
+            </div>
+          </div>
+
+          <button class="download-button" id="download-button" type="button">
+            <span>ดาวน์โหลด PNG</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3v12m0 0 5-5m-5 5-5-5M5 19h14" />
+            </svg>
+          </button>
+          <p class="privacy-note">
+            <span aria-hidden="true">●</span> ข้อความของคุณประมวลผลในเบราว์เซอร์เท่านั้น
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>QR / TEXT</span>
+      <p>Simple tools, thoughtfully made.</p>
+    </footer>
+  </body>
+</html>
