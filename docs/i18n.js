@@ -133,3 +133,12 @@ const QR_STYLE_TRANSLATIONS = {
 Object.entries(QR_STYLE_TRANSLATIONS).forEach(([locale, styleStrings]) => {
   Object.assign(window.QR_TRANSLATIONS[locale], styleStrings);
 });
+
+const QR_THAI_STYLE_LABELS = {
+  th: "ลายไทย", en: "Thai motif", zh: "泰式纹样", ja: "タイ文様", ko: "태국 문양", es: "Motivo tailandés", fr: "Motif thaï",
+  de: "Thai-Motiv", pt: "Motivo tailandês", ru: "Тайский узор", ar: "زخرفة تايلاندية", hi: "थाई पैटर्न", id: "Motif Thailand", vi: "Họa tiết Thái",
+};
+
+Object.entries(QR_THAI_STYLE_LABELS).forEach(([locale, label]) => {
+  window.QR_TRANSLATIONS[locale].styleThai = label;
+});

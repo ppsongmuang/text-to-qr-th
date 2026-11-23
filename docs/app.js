@@ -212,12 +212,70 @@ function drawModule(context, column, row, unit, quiet, fill) {
   context.fill();
 }
 
+function drawThaiFrame(context, size, unit) {
+  const margin = unit * 0.42;
+  const reach = unit * 2.15;
+  const ornamentColor = "#b58a32";
+
+  function drawCorner(flipX, flipY) {
+    context.save();
+    context.translate(flipX ? size : 0, flipY ? size : 0);
+    context.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+    context.globalAlpha = 0.96;
+    context.strokeStyle = ornamentColor;
+    context.fillStyle = ornamentColor;
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    context.lineWidth = Math.max(1.6, unit * 0.2);
+
+    context.beginPath();
+    context.moveTo(margin + reach, margin);
+    context.lineTo(margin + unit * 0.72, margin);
+    context.quadraticCurveTo(margin, margin, margin, margin + unit * 0.72);
+    context.lineTo(margin, margin + reach);
+    context.stroke();
+
+    context.beginPath();
+    context.moveTo(margin + unit * 0.55, margin + unit * 1.72);
+    context.bezierCurveTo(
+      margin + unit * 0.62,
+      margin + unit * 1.03,
+      margin + unit * 1.05,
+      margin + unit * 0.61,
+      margin + unit * 1.72,
+      margin + unit * 0.55,
+    );
+    context.bezierCurveTo(
+      margin + unit * 1.18,
+      margin + unit * 0.86,
+      margin + unit * 0.86,
+      margin + unit * 1.18,
+      margin + unit * 0.55,
+      margin + unit * 1.72,
+    );
+    context.closePath();
+    context.fill();
+
+    context.translate(margin + unit * 1.68, margin + unit * 1.68);
+    context.rotate(Math.PI / 4);
+    context.fillRect(-unit * 0.18, -unit * 0.18, unit * 0.36, unit * 0.36);
+    context.restore();
+  }
+
+  drawCorner(false, false);
+  drawCorner(true, false);
+  drawCorner(false, true);
+  drawCorner(true, true);
+}
+
 function drawQr(matrix) {
   const size = Number(elements.size.value);
   const context = elements.canvas.getContext("2d");
   const count = matrix.getModuleCount();
   const quiet = 4;
-  const unit = size / (count + quiet * 2);
+  const ornament = activeStyle === "thai" ? 3 : 0;
+  const offset = quiet + ornament;
+  const unit = size / (count + offset * 2);
 
   elements.canvas.width = size;
   elements.canvas.height = size;
@@ -235,14 +293,16 @@ function drawQr(matrix) {
   for (let row = 0; row < count; row += 1) {
     for (let column = 0; column < count; column += 1) {
       if (!matrix.isDark(row, column) || isFinderModule(row, column, count)) continue;
-      drawModule(context, column, row, unit, quiet, fill);
+      drawModule(context, column, row, unit, offset, fill);
     }
   }
 
-  const roundedFinder = ["rounded", "dots", "gradient"].includes(activeStyle);
-  drawFinder(context, 0, 0, unit, quiet, fill, roundedFinder);
-  drawFinder(context, count - 7, 0, unit, quiet, fill, roundedFinder);
-  drawFinder(context, 0, count - 7, unit, quiet, fill, roundedFinder);
+  const roundedFinder = ["rounded", "dots", "gradient", "thai"].includes(activeStyle);
+  drawFinder(context, 0, 0, unit, offset, fill, roundedFinder);
+  drawFinder(context, count - 7, 0, unit, offset, fill, roundedFinder);
+  drawFinder(context, 0, count - 7, unit, offset, fill, roundedFinder);
+
+  if (activeStyle === "thai") drawThaiFrame(context, size, unit);
 }
 
 function createQr(payload) {

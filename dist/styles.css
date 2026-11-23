@@ -452,7 +452,7 @@ h1 em::after {
 
 .style-options {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -516,6 +516,23 @@ h1 em::after {
 .style-button[data-qr-style="diamond"] .style-sample i:not(:first-child) { transform: rotate(45deg) scale(0.82); }
 .style-button[data-qr-style="gradient"] .style-sample i:not(:first-child) { background: linear-gradient(135deg, var(--ink), #438a78); }
 .style-button[data-qr-style="gradient"] .style-sample i:first-child { border-color: #438a78; }
+.style-button[data-qr-style="thai"] .style-sample {
+  color: var(--ink);
+  border-color: #b58a32;
+}
+.style-button[data-qr-style="thai"] .style-sample::before,
+.style-button[data-qr-style="thai"] .style-sample::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-color: #b58a32;
+  border-style: solid;
+}
+.style-button[data-qr-style="thai"] .style-sample::before { left: 2px; top: 2px; border-width: 2px 0 0 2px; border-radius: 7px 0 0; }
+.style-button[data-qr-style="thai"] .style-sample::after { right: 2px; bottom: 2px; border-width: 0 2px 2px 0; border-radius: 0 0 7px; }
+.style-button[data-qr-style="thai"] .style-sample i { border-radius: 2px; transform: scale(0.82) rotate(45deg); }
+.style-button[data-qr-style="thai"] .style-sample i:first-child { transform: none; border-radius: 3px; }
 
 .settings-grid {
   display: grid;
