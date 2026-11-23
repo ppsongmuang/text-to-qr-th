@@ -1,5 +1,12 @@
 const translations = window.QR_TRANSLATIONS;
-const defaults = { size: 480, level: "M", foreground: "#173f36", background: "#fffdf7" };
+const defaults = {
+  size: 480,
+  level: "M",
+  foreground: "#173f36",
+  background: "#fffdf7",
+  accent: "#438a78",
+  style: "classic",
+};
 
 const elements = {
   language: document.querySelector("#language-select"),
@@ -10,10 +17,14 @@ const elements = {
   wifiHidden: document.querySelector("#wifi-hidden"),
   size: document.querySelector("#qr-size"),
   level: document.querySelector("#qr-level"),
+  styleButtons: [...document.querySelectorAll("[data-qr-style]")],
   foreground: document.querySelector("#qr-foreground"),
   background: document.querySelector("#qr-background"),
+  accent: document.querySelector("#qr-accent"),
   foregroundValue: document.querySelector("#foreground-value"),
   backgroundValue: document.querySelector("#background-value"),
+  accentValue: document.querySelector("#accent-value"),
+  accentControl: document.querySelector("#accent-color-control"),
   count: document.querySelector("#char-count"),
   canvas: document.querySelector("#qr-canvas"),
   empty: document.querySelector("#empty-state"),
@@ -24,7 +35,8 @@ const elements = {
 
 let currentLocale = "th";
 let activeTool = "text";
-let qr;
+let activeStyle = defaults.style;
+let hasQr = false;
 let renderTimer;
 
 const strings = () => translations[currentLocale];
@@ -113,6 +125,7 @@ function buildPayload() {
 function updateColorLabels() {
   elements.foregroundValue.value = elements.foreground.value.toUpperCase();
   elements.backgroundValue.value = elements.background.value.toUpperCase();
+  elements.accentValue.value = elements.accent.value.toUpperCase();
 }
 
 function updateCount(payload) {
@@ -123,24 +136,136 @@ function showEmptyState(isEmpty) {
   elements.canvas.hidden = isEmpty;
   elements.empty.hidden = !isEmpty;
   elements.download.disabled = isEmpty;
+  if (isEmpty) hasQr = false;
   setStatus(isEmpty ? strings().waiting : strings().updated);
 }
 
-function createQr(payload) {
-  if (typeof QRious === "undefined") {
-    setStatus(strings().loadError);
-    elements.download.disabled = true;
+function isFinderModule(row, column, count) {
+  return (row < 7 && column < 7)
+    || (row < 7 && column >= count - 7)
+    || (row >= count - 7 && column < 7);
+}
+
+function roundedRect(context, x, y, width, height, radius) {
+  const safeRadius = Math.max(0, Math.min(radius, width / 2, height / 2));
+  context.beginPath();
+  context.moveTo(x + safeRadius, y);
+  context.lineTo(x + width - safeRadius, y);
+  context.quadraticCurveTo(x + width, y, x + width, y + safeRadius);
+  context.lineTo(x + width, y + height - safeRadius);
+  context.quadraticCurveTo(x + width, y + height, x + width - safeRadius, y + height);
+  context.lineTo(x + safeRadius, y + height);
+  context.quadraticCurveTo(x, y + height, x, y + height - safeRadius);
+  context.lineTo(x, y + safeRadius);
+  context.quadraticCurveTo(x, y, x + safeRadius, y);
+  context.closePath();
+}
+
+function drawFinder(context, column, row, unit, quiet, fill, rounded) {
+  const x = (column + quiet) * unit;
+  const y = (row + quiet) * unit;
+  const radius = rounded ? unit * 1.25 : 0;
+
+  context.fillStyle = fill;
+  roundedRect(context, x, y, unit * 7, unit * 7, radius);
+  context.fill();
+  context.fillStyle = elements.background.value;
+  roundedRect(context, x + unit, y + unit, unit * 5, unit * 5, rounded ? unit * 0.8 : 0);
+  context.fill();
+  context.fillStyle = fill;
+  roundedRect(context, x + unit * 2, y + unit * 2, unit * 3, unit * 3, rounded ? unit * 0.65 : 0);
+  context.fill();
+}
+
+function drawModule(context, column, row, unit, quiet, fill) {
+  const x = (column + quiet) * unit;
+  const y = (row + quiet) * unit;
+  context.fillStyle = fill;
+
+  if (activeStyle === "dots") {
+    context.beginPath();
+    context.arc(x + unit / 2, y + unit / 2, unit * 0.43, 0, Math.PI * 2);
+    context.fill();
     return;
   }
-  qr = new QRious({
-    element: elements.canvas,
-    value: payload,
-    size: Number(elements.size.value),
-    level: elements.level.value,
-    foreground: elements.foreground.value,
-    background: elements.background.value,
-    padding: 28,
+
+  if (activeStyle === "diamond") {
+    context.save();
+    context.translate(x + unit / 2, y + unit / 2);
+    context.rotate(Math.PI / 4);
+    context.fillRect(-unit * 0.41, -unit * 0.41, unit * 0.82, unit * 0.82);
+    context.restore();
+    return;
+  }
+
+  if (activeStyle === "classic") {
+    const left = Math.round(x);
+    const top = Math.round(y);
+    const right = Math.round(x + unit);
+    const bottom = Math.round(y + unit);
+    context.fillRect(left, top, right - left, bottom - top);
+    return;
+  }
+
+  const inset = unit * 0.055;
+  roundedRect(context, x + inset, y + inset, unit - inset * 2, unit - inset * 2, unit * 0.28);
+  context.fill();
+}
+
+function drawQr(matrix) {
+  const size = Number(elements.size.value);
+  const context = elements.canvas.getContext("2d");
+  const count = matrix.getModuleCount();
+  const quiet = 4;
+  const unit = size / (count + quiet * 2);
+
+  elements.canvas.width = size;
+  elements.canvas.height = size;
+  context.clearRect(0, 0, size, size);
+  context.fillStyle = elements.background.value;
+  context.fillRect(0, 0, size, size);
+
+  let fill = elements.foreground.value;
+  if (activeStyle === "gradient") {
+    fill = context.createLinearGradient(0, 0, size, size);
+    fill.addColorStop(0, elements.foreground.value);
+    fill.addColorStop(1, elements.accent.value);
+  }
+
+  for (let row = 0; row < count; row += 1) {
+    for (let column = 0; column < count; column += 1) {
+      if (!matrix.isDark(row, column) || isFinderModule(row, column, count)) continue;
+      drawModule(context, column, row, unit, quiet, fill);
+    }
+  }
+
+  const roundedFinder = ["rounded", "dots", "gradient"].includes(activeStyle);
+  drawFinder(context, 0, 0, unit, quiet, fill, roundedFinder);
+  drawFinder(context, count - 7, 0, unit, quiet, fill, roundedFinder);
+  drawFinder(context, 0, count - 7, unit, quiet, fill, roundedFinder);
+}
+
+function createQr(payload) {
+  if (typeof qrcode === "undefined") return null;
+  if (qrcode.stringToBytesFuncs?.["UTF-8"]) {
+    qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
+  }
+  const matrix = qrcode(0, elements.level.value);
+  matrix.addData(payload, "Byte");
+  matrix.make();
+  return matrix;
+}
+
+function selectStyle(style, shouldRender = true) {
+  if (!elements.styleButtons.some((button) => button.dataset.qrStyle === style)) return;
+  activeStyle = style;
+  elements.styleButtons.forEach((button) => {
+    const selected = button.dataset.qrStyle === style;
+    button.classList.toggle("is-active", selected);
+    button.setAttribute("aria-pressed", String(selected));
   });
+  elements.accentControl.classList.toggle("is-active", style === "gradient");
+  if (shouldRender) renderQr();
 }
 
 function renderQr() {
@@ -155,17 +280,17 @@ function renderQr() {
   showEmptyState(false);
   renderTimer = window.setTimeout(() => {
     try {
-      if (!qr) createQr(payload);
-      else qr.set({
-        value: payload,
-        size: Number(elements.size.value),
-        level: elements.level.value,
-        foreground: elements.foreground.value,
-        background: elements.background.value,
-        padding: 28,
-      });
-      if (qr) setStatus(strings().updated);
+      const matrix = createQr(payload);
+      if (!matrix) {
+        setStatus(strings().loadError);
+        elements.download.disabled = true;
+        return;
+      }
+      drawQr(matrix);
+      hasQr = true;
+      setStatus(strings().updated);
     } catch (error) {
+      hasQr = false;
       setStatus(strings().tooLong);
       elements.download.disabled = true;
       console.error(error);
@@ -226,7 +351,7 @@ function resolveInitialLanguage() {
 }
 
 function downloadQr() {
-  if (!qr || elements.download.disabled) return;
+  if (!hasQr || elements.download.disabled) return;
   const link = document.createElement("a");
   link.download = `qr-${activeTool}-${new Date().toISOString().slice(0, 10)}.png`;
   link.href = elements.canvas.toDataURL("image/png");
@@ -247,18 +372,22 @@ function resetAll() {
   elements.level.value = defaults.level;
   elements.foreground.value = defaults.foreground;
   elements.background.value = defaults.background;
+  elements.accent.value = defaults.accent;
+  selectStyle(defaults.style, false);
   renderQr();
   activePanel.querySelector(".tool-field")?.focus();
 }
 
 elements.fields.forEach((element) => element.addEventListener("input", renderQr));
 elements.wifiHidden.addEventListener("change", renderQr);
-[elements.size, elements.level, elements.foreground, elements.background]
+[elements.size, elements.level, elements.foreground, elements.background, elements.accent]
   .forEach((element) => element.addEventListener("input", renderQr));
 elements.toolButtons.forEach((button) => button.addEventListener("click", () => selectTool(button.dataset.tool)));
+elements.styleButtons.forEach((button) => button.addEventListener("click", () => selectStyle(button.dataset.qrStyle)));
 elements.language.addEventListener("change", (event) => applyLanguage(event.target.value));
 elements.download.addEventListener("click", downloadQr);
 elements.reset.addEventListener("click", resetAll);
 
 applyLanguage(resolveInitialLanguage(), false);
+selectStyle(defaults.style, false);
 window.addEventListener("load", renderQr);

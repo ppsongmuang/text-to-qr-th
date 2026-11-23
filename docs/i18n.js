@@ -112,3 +112,24 @@ window.QR_TRANSLATIONS = {
     empty: "Nhập văn bản để tạo mã QR", download: "Tải PNG", privacy: "Văn bản chỉ được xử lý trong trình duyệt", footer: "Công cụ đơn giản, được tạo nên chu đáo.", canvasLabel: "Mã QR được tạo từ văn bản", defaultText: "Xin chào! Hãy quét mã QR này",
   },
 };
+
+const QR_STYLE_TRANSLATIONS = {
+  th: { styleTitle: "ลวดลาย QR", styleHint: "เลือกแบบที่เข้ากับงานของคุณ", styleClassic: "คลาสสิก", styleRounded: "มุมมน", styleDots: "จุดกลม", styleDiamond: "เพชร", styleGradient: "ไล่สี", accentColor: "สีไล่ระดับ" },
+  en: { styleTitle: "QR style", styleHint: "Choose a look that fits your design", styleClassic: "Classic", styleRounded: "Rounded", styleDots: "Dots", styleDiamond: "Diamond", styleGradient: "Gradient", accentColor: "Gradient color" },
+  zh: { styleTitle: "二维码样式", styleHint: "选择适合您设计的外观", styleClassic: "经典", styleRounded: "圆角", styleDots: "圆点", styleDiamond: "菱形", styleGradient: "渐变", accentColor: "渐变颜色" },
+  ja: { styleTitle: "QRスタイル", styleHint: "デザインに合う外観を選択", styleClassic: "クラシック", styleRounded: "角丸", styleDots: "ドット", styleDiamond: "ダイヤ", styleGradient: "グラデーション", accentColor: "グラデーション色" },
+  ko: { styleTitle: "QR 스타일", styleHint: "디자인에 어울리는 모양을 선택하세요", styleClassic: "클래식", styleRounded: "둥근 모서리", styleDots: "도트", styleDiamond: "다이아몬드", styleGradient: "그라데이션", accentColor: "그라데이션 색상" },
+  es: { styleTitle: "Estilo del QR", styleHint: "Elige el aspecto que mejor encaje", styleClassic: "Clásico", styleRounded: "Redondeado", styleDots: "Puntos", styleDiamond: "Diamante", styleGradient: "Degradado", accentColor: "Color del degradado" },
+  fr: { styleTitle: "Style du QR", styleHint: "Choisissez un style adapté à votre design", styleClassic: "Classique", styleRounded: "Arrondi", styleDots: "Points", styleDiamond: "Diamant", styleGradient: "Dégradé", accentColor: "Couleur du dégradé" },
+  de: { styleTitle: "QR-Stil", styleHint: "Wähle den passenden Look", styleClassic: "Klassisch", styleRounded: "Abgerundet", styleDots: "Punkte", styleDiamond: "Diamant", styleGradient: "Verlauf", accentColor: "Verlaufsfarbe" },
+  pt: { styleTitle: "Estilo do QR", styleHint: "Escolha o visual que combina com seu design", styleClassic: "Clássico", styleRounded: "Arredondado", styleDots: "Pontos", styleDiamond: "Diamante", styleGradient: "Gradiente", accentColor: "Cor do gradiente" },
+  ru: { styleTitle: "Стиль QR", styleHint: "Выберите подходящее оформление", styleClassic: "Классика", styleRounded: "Скруглённый", styleDots: "Точки", styleDiamond: "Ромб", styleGradient: "Градиент", accentColor: "Цвет градиента" },
+  ar: { styleTitle: "نمط QR", styleHint: "اختر المظهر المناسب لتصميمك", styleClassic: "كلاسيكي", styleRounded: "مستدير", styleDots: "نقاط", styleDiamond: "ماسي", styleGradient: "تدرج", accentColor: "لون التدرج" },
+  hi: { styleTitle: "QR शैली", styleHint: "अपने डिज़ाइन के लिए रूप चुनें", styleClassic: "क्लासिक", styleRounded: "गोल किनारे", styleDots: "डॉट्स", styleDiamond: "डायमंड", styleGradient: "ग्रेडिएंट", accentColor: "ग्रेडिएंट रंग" },
+  id: { styleTitle: "Gaya QR", styleHint: "Pilih tampilan yang sesuai desain Anda", styleClassic: "Klasik", styleRounded: "Membulat", styleDots: "Titik", styleDiamond: "Berlian", styleGradient: "Gradasi", accentColor: "Warna gradasi" },
+  vi: { styleTitle: "Kiểu QR", styleHint: "Chọn kiểu phù hợp với thiết kế", styleClassic: "Cổ điển", styleRounded: "Bo tròn", styleDots: "Chấm tròn", styleDiamond: "Kim cương", styleGradient: "Chuyển màu", accentColor: "Màu chuyển sắc" },
+};
+
+Object.entries(QR_STYLE_TRANSLATIONS).forEach(([locale, styleStrings]) => {
+  Object.assign(window.QR_TRANSLATIONS[locale], styleStrings);
+});

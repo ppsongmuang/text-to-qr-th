@@ -16,7 +16,8 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
-    <script defer src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode_UTF8.js"></script>
     <script defer src="./i18n.js"></script>
     <script defer src="./tools-i18n.js"></script>
     <script defer src="./app.js"></script>
@@ -157,6 +158,35 @@
             <div class="form-meta"><span id="payload-label" data-i18n="payloadLength">ความยาวข้อมูล</span><span id="char-count" aria-live="polite">25 / 900</span></div>
           </div>
 
+          <fieldset class="style-picker" aria-label="เลือกลวดลาย QR Code" data-i18n-aria-label="styleTitle">
+            <legend>
+              <strong data-i18n="styleTitle">ลวดลาย QR</strong>
+              <span data-i18n="styleHint">เลือกแบบที่เข้ากับงานของคุณ</span>
+            </legend>
+            <div class="style-options">
+              <button class="style-button is-active" type="button" data-qr-style="classic" aria-pressed="true">
+                <span class="style-sample" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                <span data-i18n="styleClassic">คลาสสิก</span>
+              </button>
+              <button class="style-button" type="button" data-qr-style="rounded" aria-pressed="false">
+                <span class="style-sample" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                <span data-i18n="styleRounded">มุมมน</span>
+              </button>
+              <button class="style-button" type="button" data-qr-style="dots" aria-pressed="false">
+                <span class="style-sample" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                <span data-i18n="styleDots">จุดกลม</span>
+              </button>
+              <button class="style-button" type="button" data-qr-style="diamond" aria-pressed="false">
+                <span class="style-sample" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                <span data-i18n="styleDiamond">เพชร</span>
+              </button>
+              <button class="style-button" type="button" data-qr-style="gradient" aria-pressed="false">
+                <span class="style-sample" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                <span data-i18n="styleGradient">ไล่สี</span>
+              </button>
+            </div>
+          </fieldset>
+
           <div class="settings-grid">
             <label class="control">
               <span data-i18n="size">ขนาด</span>
@@ -190,6 +220,14 @@
               <span class="color-input-wrap">
                 <input id="qr-background" type="color" value="#fffdf7" />
                 <output id="background-value">#FFFDF7</output>
+              </span>
+            </label>
+
+            <label class="color-control accent-color-control" id="accent-color-control">
+              <span data-i18n="accentColor">สีไล่ระดับ</span>
+              <span class="color-input-wrap">
+                <input id="qr-accent" type="color" value="#438a78" />
+                <output id="accent-value">#438A78</output>
               </span>
             </label>
           </div>
