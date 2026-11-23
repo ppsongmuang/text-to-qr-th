@@ -182,9 +182,9 @@ function drawModule(context, column, row, unit, quiet, fill) {
   const y = (row + quiet) * unit;
   context.fillStyle = fill;
 
-  if (activeStyle === "dots") {
+  if (activeStyle === "dots" || activeStyle === "thai") {
     context.beginPath();
-    context.arc(x + unit / 2, y + unit / 2, unit * 0.43, 0, Math.PI * 2);
+    context.arc(x + unit / 2, y + unit / 2, unit * (activeStyle === "thai" ? 0.44 : 0.43), 0, Math.PI * 2);
     context.fill();
     return;
   }
@@ -293,7 +293,13 @@ function drawQr(matrix) {
   for (let row = 0; row < count; row += 1) {
     for (let column = 0; column < count; column += 1) {
       if (!matrix.isDark(row, column) || isFinderModule(row, column, count)) continue;
-      drawModule(context, column, row, unit, offset, fill);
+      let moduleFill = fill;
+      if (activeStyle === "thai") {
+        const band = (row + column * 2) % 10;
+        if (band === 1 || band === 2) moduleFill = "#7a263a";
+        else if (band === 6 || band === 7) moduleFill = "#204a68";
+      }
+      drawModule(context, column, row, unit, offset, moduleFill);
     }
   }
 

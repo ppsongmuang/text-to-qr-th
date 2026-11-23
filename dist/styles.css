@@ -533,6 +533,9 @@ h1 em::after {
 .style-button[data-qr-style="thai"] .style-sample::after { right: 2px; bottom: 2px; border-width: 0 2px 2px 0; border-radius: 0 0 7px; }
 .style-button[data-qr-style="thai"] .style-sample i { border-radius: 2px; transform: scale(0.82) rotate(45deg); }
 .style-button[data-qr-style="thai"] .style-sample i:first-child { transform: none; border-radius: 3px; }
+.style-button[data-qr-style="thai"] .style-sample i:nth-child(2) { background: #7a263a; }
+.style-button[data-qr-style="thai"] .style-sample i:nth-child(3) { background: #204a68; }
+.style-button[data-qr-style="thai"] .style-sample i:nth-child(4) { background: var(--ink); }
 
 .settings-grid {
   display: grid;
